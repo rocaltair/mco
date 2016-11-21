@@ -7,15 +7,18 @@
 #include <sys/time.h>
 #include "mco.h"
 #include "htimer.h"
+#include "mpoll.h"
 
 #ifndef MCO_DEFAULT_ST_SZ
 # define MCO_DEFAULT_ST_SZ (32 * 1024)
 #endif 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+
 /*
  * #define ENABLE_MCO_DEBUG
  */
+
 #ifdef ENABLE_MCO_DEBUG
 #include <stdio.h>
 # define DLOG(fmt, ...) fprintf(stderr, "<mco>" fmt "\n", ##__VA_ARGS__)
@@ -35,8 +38,13 @@ struct mco_schedule {
 	int running;
 
 	int nco;
+	int nactive;
 	int cap;
 	mcoco **co;
+	struct poll m_poll;
+
+	int later_list[1024];
+	int later_cnt;
 };
 
 struct mcoco {
@@ -60,6 +68,7 @@ static mcoco* new_mcoco(mco_schedule *S,
 			 void *ud);
 static void delete_mcoco(mcoco *C);
 static void mco_main(uint32_t low, uint32_t high);
+static void mco_on_resume_later(mco_schedule *S);
 
 mco_schedule* mco_open(int st_sz)
 {
@@ -68,6 +77,7 @@ mco_schedule* mco_open(int st_sz)
 	S->cap = 16;
 	S->nco = 0;
 	S->running = -1;
+	S->later_cnt = 0;
 	htimer_mgr_init(&S->timer_mgr);
 	S->co = malloc(sizeof(mcoco *) * S->cap);
 	memset(S->co, 0, sizeof(mcoco *) * S->cap);
@@ -94,15 +104,11 @@ void mco_sleep(mco_schedule *S, int ms)
 
 void mco_run(mco_schedule *S, int flag)
 {
-	int next;
 	do {
-		if (S->nco <= 0)
+		mco_on_resume_later(S);
+		if (mco_active_sz(S) <= 0)
 			return;
-		next = htimer_next_timeout(&S->timer_mgr);
-		if (next < 0)
-			return;
-		htimer_ms_sleep(next);
-		htimer_perform(&S->timer_mgr);
+		mco_poll(S);
 	} while(flag == MCO_RUN_DEFAULT);
 }
 
@@ -152,6 +158,23 @@ err_nomem:
 	return id;
 }
 
+static void mco_on_resume_later(mco_schedule *S)
+{
+	int i;
+	for (i = 0; i < S->later_cnt; i++) {
+		int id = S->later_list[i];
+		if (id >= 0)
+			mco_resume(S, id);
+	}
+	S->later_cnt = 0;
+}
+
+void mco_resume_later(mco_schedule *S, int id)
+{
+	assert(S->later_cnt + 1 < sizeof(S->later_list)/sizeof(S->later_list[0]));
+	S->later_list[S->later_cnt++] = id;
+}
+
 void mco_resume(mco_schedule *S, int id)
 {
 	mcoco *C = NULL;
@@ -167,6 +190,8 @@ void mco_resume(mco_schedule *S, int id)
 
 	switch(C->status) {
 	case MCO_READY:
+		S->nactive++;
+		assert(S->nactive <= S->nco);
 		getcontext(&C->ctx);
 		C->ctx.uc_stack.ss_sp = C->stack;
 		C->ctx.uc_stack.ss_size = C->st_sz;
@@ -217,6 +242,22 @@ int mco_running(mco_schedule *S)
 	return S->running;
 }
 
+
+int mco_active_sz(mco_schedule *S)
+{
+	return S->nactive;
+}
+
+struct poll * mco_get_poll(mco_schedule *S)
+{
+	return &S->m_poll;
+}
+
+htimer_mgr_t * mco_get_timer_mgr(mco_schedule *S)
+{
+	return &S->timer_mgr;
+}
+
 static mcoco* new_mcoco(mco_schedule *S,
 			 int st_sz,
 			 mco_func func,
@@ -262,5 +303,7 @@ static void mco_main(uint32_t low, uint32_t high)
 	S->running = -1;
 	delete_mcoco(C);
 	S->nco--;
+	S->nactive--;
+	assert(S->nactive <= S->nco);
 }
 

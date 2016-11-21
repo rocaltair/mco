@@ -17,7 +17,9 @@ typedef enum {
 	MCO_RUN_ONCE = 1,
 } mco_flag_t;
 
+struct poll;
 struct mco_schedule;
+struct htimer_mgr_s;
 typedef struct mco_schedule mco_schedule;
 
 typedef void (*mco_func)(mco_schedule *S, void *ud);
@@ -32,6 +34,11 @@ int mco_new(mco_schedule *S, int st_sz, mco_func func, void *ud);
 void mco_resume(mco_schedule *S, int id);
 void mco_yield(mco_schedule *S);
 int mco_status(mco_schedule *S, int id);
+
+void mco_resume_later(mco_schedule *S, int id);
+int mco_active_sz(mco_schedule *S);
+struct poll * mco_get_poll(mco_schedule *S);
+struct htimer_mgr_s * mco_get_timer_mgr(mco_schedule *S);
 
 #if defined (__cplusplus)
 }	/*end of extern "C"*/
