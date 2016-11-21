@@ -13,7 +13,7 @@ void func(mco_schedule *S, void *ud)
 	args_t *args = ud;
 	for (i = 0; i < args->n; i++) {
 		int t = random() % 5 + 1;
-		mco_sleep(S, t * 1000);
+		mco_sleep(S, t * 100);
 		printf("id=%d,i=%d,t=%d\n", id, i, t);
 	}
 }
@@ -29,7 +29,7 @@ void mco_test(mco_schedule *S)
 	id1 = mco_new(S, 0, func, &args1);
 	id2 = mco_new(S, 0, func, &args2);
 	mco_resume(S, id1);
-	mco_resume(S, id2);
+	// mco_resume(S, id2);
 	mco_run(S, 0);
 }
 
