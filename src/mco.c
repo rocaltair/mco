@@ -180,13 +180,19 @@ void mco_resume(mco_schedule *S, int id)
 	mcoco *C = NULL;
 	DLOG("resume,id=%d,running=%d", id, S->running);
 	assert(id >= 0 && id < S->cap);
-	assert(S->running == -1);
+	/*
+	 * assert(S->running == -1);
+	 */
 
 	C = S->co[id];
 	assert(C != NULL);
 
 	/* TODO, return if status == MCO_RUNING? */
 	assert(C->status != MCO_RUNING && "don't resume co while running");
+	if (S->running >= 0) {
+		mco_resume_later(S, id);
+		return;
+	}
 
 	switch(C->status) {
 	case MCO_READY:

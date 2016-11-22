@@ -38,7 +38,7 @@ void listen_service(mco_schedule *S, void *ud)
 	while ((cli_fd = mco_accept(S, listen_fd, host.ip, &host.port)) > 0) {
 		int id = mco_new(S, 0, client_handle, (void *)(uintptr_t)cli_fd);
 		printf("accept %s:%d\n", host.ip, host.port);
-		mco_resume_later(S, id);
+		mco_resume(S, id);
 	}
 	printf("end accept\n");
 }
