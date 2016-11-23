@@ -7,11 +7,11 @@ extern "C" {
 
 struct mco_schedule;
 
-int mco_lookup(char *name, uint32_t *ip);
+int mco_lookup(const char *name, uint32_t *ip);
 
-int mco_announce(struct mco_schedule *S, int istcp, char *server, int port);
+int mco_announce(struct mco_schedule *S, int istcp, const char *server, int port);
 int mco_accept(struct mco_schedule *S, int fd, char *server, int *port);
-int mco_dial(struct mco_schedule *S, int istcp, char *server, int port);
+int mco_dial(struct mco_schedule *S, int istcp, const char *server, int port);
 
 #if defined (__cplusplus)
 }	/*end of extern "C"*/

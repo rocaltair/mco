@@ -17,7 +17,7 @@
 
 typedef struct mco_schedule mco_schedule;
 
-int mco_announce(mco_schedule *S, int istcp, char *server, int port)
+int mco_announce(mco_schedule *S, int istcp, const char *server, int port)
 {
 	int fd, n, proto;
 	struct sockaddr_in sa;
@@ -82,13 +82,15 @@ int mco_accept(mco_schedule *S, int fd, char *server, int *port)
 }
 
 #define CLASS(p) ((*(unsigned char*)(p))>>6)
-static int parseip(char *name, uint32_t *ip)
+static int parseip(const char *name, uint32_t *ip)
 {
+	char buf[32];
 	unsigned char addr[4];
 	char *p;
 	int i, x;
 
-	p = name;
+	strncpy(buf, name, sizeof(buf)/sizeof(buf[0]));
+	p = buf;
 	for(i=0; i<4 && *p; i++){
 		x = strtoul(p, &p, 0);
 		if(x < 0 || x >= 256)
@@ -126,7 +128,7 @@ static int parseip(char *name, uint32_t *ip)
 	return 0;
 }
 
-int mco_lookup(char *name, uint32_t *ip)
+int mco_lookup(const char *name, uint32_t *ip)
 {
 	struct hostent *he;
 
@@ -142,7 +144,7 @@ int mco_lookup(char *name, uint32_t *ip)
 	return -1;
 }
 
-int mco_dial(mco_schedule *S, int istcp, char *server, int port)
+int mco_dial(mco_schedule *S, int istcp, const char *server, int port)
 {
 	int proto, fd, n;
 	uint32_t ip;
