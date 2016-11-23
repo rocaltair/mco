@@ -5,6 +5,15 @@
 extern "C" {
 #endif
 
+#define mco_assert(condition)                          \
+	do {                                           \
+	        if (condition)                         \
+	                break;                         \
+	        mco_dump_traceback(#condition);        \
+	        exit(1);                               \
+	} while(0)
+	
+
 typedef enum {
 	MCO_DEAD = 0,
 	MCO_READY = 1,
@@ -41,6 +50,9 @@ int mco_create(mco_schedule *S, int st_sz, mco_func func, void *ud);
 int mco_active_sz(mco_schedule *S);
 struct poll * mco_get_poll(mco_schedule *S);
 struct htimer_mgr_s * mco_get_timer_mgr(mco_schedule *S);
+
+void mco_dump_traceback(const char *caller);
+
 
 #if defined (__cplusplus)
 }	/*end of extern "C"*/

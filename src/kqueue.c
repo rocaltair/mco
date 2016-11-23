@@ -36,9 +36,9 @@ void mco_poll(mco_schedule *S)
 		struct kevent *p = &kev[i];
 		int fd = p->ident;
 		int id = (int)(uintptr_t)p->udata;
-		int flags = p->flags;
+		int filter = p->filter;
 
-		EV_SET(p, fd, flags, EV_DELETE, 0, 0, NULL); 
+		EV_SET(p, fd, filter, EV_DELETE, 0, 0, NULL); 
 		kevent(kq, p, 1, NULL, 0, NULL);
 		mco_resume(S, id);
 	}
@@ -47,7 +47,7 @@ void mco_poll(mco_schedule *S)
 void mco_wait(mco_schedule *S, int fd, int flag)
 {
 	struct kevent changes[1]; 
-	int ev_flag = 0;
+	int filter = 0;
 	int id = mco_running(S);
 	struct poll *m_poll = mco_get_poll(S);
 	int kq = m_poll->kqueuefd;
@@ -56,9 +56,9 @@ void mco_wait(mco_schedule *S, int fd, int flag)
 	assert(fd >= 0);
 	assert(flag == 'r' || flag == 'w');
 
-	ev_flag |= flag == 'r' ? EVFILT_READ : 0;
-	ev_flag |= flag == 'w' ? EVFILT_WRITE : 0;
-	EV_SET(&changes[0], fd, ev_flag, EV_ADD, 0, 0, (void *)(uintptr_t)(int)id); 
+	filter |= flag == 'r' ? EVFILT_READ : 0;
+	filter |= flag == 'w' ? EVFILT_WRITE : 0;
+	EV_SET(&changes[0], fd, filter, EV_ADD, 0, 0, (void *)(uintptr_t)(int)id); 
 	kevent(kq, changes, 1, NULL, 0, NULL);
 	mco_yield(S);
 }

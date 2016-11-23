@@ -1,10 +1,12 @@
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #include <ucontext.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <sys/time.h>
+#include <execinfo.h>
+#include <unistd.h>
+#include <stdio.h>
 #include "mco.h"
 #include "htimer.h"
 #include "mpoll.h"
@@ -95,7 +97,7 @@ void mco_sleep(mco_schedule *S, int ms)
 {
 	int id = S->running;
 	struct timer_handler th;
-	assert(id >= 0 && id < S->cap);
+	mco_assert(id >= 0 && id < S->cap);
 	th.S = S;
 	th.id = id;
 	htimer_init(&S->timer_mgr, &th.timer);
@@ -140,7 +142,7 @@ int mco_new(mco_schedule *S, int st_sz, mco_func func, void *ud)
 			goto err_nomem;
 		S->cap *= 2;
 		S->co = co;
-		assert(S->co != NULL);
+		mco_assert(S->co != NULL);
 		memset(S->co + ocap, 0, sizeof(mcoco *) * ocap);
 	}
 	C = new_mcoco(S, st_sz, func, ud);
@@ -179,7 +181,7 @@ static void mco_on_resume_later(mco_schedule *S)
 
 void mco_resume_later(mco_schedule *S, int id)
 {
-	assert(S->later_cnt + 1 < sizeof(S->later_list)/sizeof(S->later_list[0]));
+	mco_assert(S->later_cnt + 1 < sizeof(S->later_list)/sizeof(S->later_list[0]));
 	S->later_list[S->later_cnt++] = id;
 }
 
@@ -187,16 +189,16 @@ void mco_resume(mco_schedule *S, int id)
 {
 	mcoco *C = NULL;
 	DLOG("resume,id=%d,running=%d", id, S->running);
-	assert(id >= 0 && id < S->cap);
+	mco_assert(id >= 0 && id < S->cap);
 	/*
-	 * assert(S->running == -1);
+	 * mco_assert(S->running == -1);
 	 */
 
 	C = S->co[id];
-	assert(C != NULL);
+	mco_assert(C != NULL);
 
 	/* TODO, return if status == MCO_RUNING? */
-	assert(C->status != MCO_RUNING && "don't resume co while running");
+	mco_assert(C->status != MCO_RUNING && "don't resume co while running");
 	if (S->running >= 0) {
 		mco_resume_later(S, id);
 		return;
@@ -205,7 +207,7 @@ void mco_resume(mco_schedule *S, int id)
 	switch(C->status) {
 	case MCO_READY:
 		S->nactive++;
-		assert(S->nactive <= S->nco);
+		mco_assert(S->nactive <= S->nco);
 		getcontext(&C->ctx);
 		C->ctx.uc_stack.ss_sp = C->stack;
 		C->ctx.uc_stack.ss_size = C->st_sz;
@@ -230,12 +232,12 @@ void mco_yield(mco_schedule *S)
 {
 	mcoco *C;
 	int id = S->running;
-	assert(id >= 0 && id < S->cap);
+	mco_assert(id >= 0 && id < S->cap);
 
 	C = S->co[id];
-	assert(C != NULL);
+	mco_assert(C != NULL);
 	DLOG("yield,status=%d", C->status);
-	assert(C->status == MCO_RUNING);
+	mco_assert(C->status == MCO_RUNING);
 	C->status = MCO_SUSPEND;
 	S->running = -1;
 	swapcontext(&C->ctx, &S->main);
@@ -244,7 +246,7 @@ void mco_yield(mco_schedule *S)
 int mco_status(mco_schedule *S, int id)
 {
 	mcoco *C;
-	assert(id >= 0 && id < S->cap);
+	mco_assert(id >= 0 && id < S->cap);
 	C = S->co[id];
 	if (C == NULL)
 		return MCO_DEAD;
@@ -318,6 +320,17 @@ static void mco_main(uint32_t low, uint32_t high)
 	delete_mcoco(C);
 	S->nco--;
 	S->nactive--;
-	assert(S->nactive <= S->nco);
+	mco_assert(S->nactive <= S->nco);
+}
+
+void mco_dump_traceback(const char *caller)
+{
+	const size_t max_frame_size = 64; 
+	void *frames[max_frame_size];
+	size_t frame_size;
+	fprintf(stderr, "Stack Trace Start for <%s>\n", caller);
+	frame_size = backtrace(frames, sizeof(frames) / sizeof(frames[0]));
+	/*you can also use backtrace_symbols here */
+	backtrace_symbols_fd(frames, frame_size, STDERR_FILENO);
 }
 
