@@ -24,6 +24,7 @@ void client_handle(mco_schedule *S, void *ud)
 	time(&t);
 	ctime_r(&t, buf);
 	n = mco_write(S, cli_fd, buf, strlen(buf) + 1);
+	(void) n;
 	close(cli_fd);
 	// printf("disconnect, wrote=%d...\n", n);
 }
