@@ -16,6 +16,15 @@
 #endif 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+#include <stdint.h>
+
+#if INTPTR_MAX == INT64_MAX
+#define ARCH_64BIT
+#elif INTPTR_MAX == INT32_MAX
+#define ARCH_32BIT
+#else
+#error "Environment not 32 or 64-bit."
+#endif
 
 /*
  * #define ENABLE_MCO_DEBUG
@@ -215,9 +224,14 @@ void mco_resume(mco_schedule *S, int id)
 		C->ctx.uc_link = &S->main;
 		C->status = MCO_RUNING;
 		S->running = id;
+#ifdef ARCH_64BIT
 		makecontext(&C->ctx, (mkctx_func)mco_main, 2,
 			    (uint32_t)(uintptr_t)S,
 			    (uint32_t)((uintptr_t)S>>32));
+#else
+		makecontext(&C->ctx, (mkctx_func)mco_main, 2,
+			    (uint32_t)(uintptr_t)S, 0);
+#endif
 		swapcontext(&S->main, &C->ctx);
 		break;
 	case MCO_SUSPEND:
@@ -310,7 +324,11 @@ static void delete_mcoco(mcoco *C)
 
 static void mco_main(uint32_t low, uint32_t high)
 {
+#ifdef ARCH_64BIT
 	uintptr_t p = (uintptr_t)low | ((uintptr_t) high << 32);
+#else
+	uintptr_t p = (uintptr_t)low;
+#endif
 	mco_schedule *S = (mco_schedule *)p;
 	int id = S->running;
 	mcoco *C = S->co[id];
