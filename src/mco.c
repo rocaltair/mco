@@ -159,6 +159,13 @@ err_nomem:
 	return id;
 }
 
+int mco_create(mco_schedule *S, int st_sz, mco_func func, void *ud)
+{
+	int id = mco_new(S, st_sz, func, ud);
+	mco_resume(S, id);	
+	return id;
+}
+
 static void mco_on_resume_later(mco_schedule *S)
 {
 	int i;

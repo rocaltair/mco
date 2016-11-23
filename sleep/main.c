@@ -16,11 +16,8 @@ void func(mco_schedule *S, void *ud)
 
 void mco_test(mco_schedule *S)
 {
-	int id1, id2;
-	id1 = mco_new(S, 0, func, (void *)(uintptr_t)5);
-	id2 = mco_new(S, 0, func, (void *)(uintptr_t)10);
-	mco_resume(S, id1);
-	mco_resume(S, id2);
+	mco_create(S, 0, func, (void *)(uintptr_t)5);
+	mco_create(S, 0, func, (void *)(uintptr_t)10);
 	mco_run(S, 0);
 }
 

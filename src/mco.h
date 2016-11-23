@@ -35,6 +35,9 @@ void mco_resume(mco_schedule *S, int id);
 void mco_yield(mco_schedule *S);
 int mco_status(mco_schedule *S, int id);
 
+/* mco_new(), and call mco_resume() */
+int mco_create(mco_schedule *S, int st_sz, mco_func func, void *ud);
+
 int mco_active_sz(mco_schedule *S);
 struct poll * mco_get_poll(mco_schedule *S);
 struct htimer_mgr_s * mco_get_timer_mgr(mco_schedule *S);
