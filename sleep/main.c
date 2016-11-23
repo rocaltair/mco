@@ -2,16 +2,12 @@
 #include <stdlib.h>
 #include "mco.h"
 
-typedef struct args_t {
-	int n;
-} args_t;
-
 void func(mco_schedule *S, void *ud)
 {
 	int i;
 	int id = mco_running(S);
-	args_t *args = ud;
-	for (i = 0; i < args->n; i++) {
+	int n = (int)(uintptr_t)ud;
+	for (i = 0; i < n; i++) {
 		int t = random() % 5 + 1;
 		mco_sleep(S, t * 100);
 		printf("id=%d,i=%d,t=%d\n", id, i, t);
@@ -21,15 +17,10 @@ void func(mco_schedule *S, void *ud)
 void mco_test(mco_schedule *S)
 {
 	int id1, id2;
-	args_t args1;
-	args_t args2;
-
-	args1.n = 5;
-	args2.n = 10;
-	id1 = mco_new(S, 0, func, &args1);
-	id2 = mco_new(S, 0, func, &args2);
+	id1 = mco_new(S, 0, func, (void *)(uintptr_t)5);
+	id2 = mco_new(S, 0, func, (void *)(uintptr_t)10);
 	mco_resume(S, id1);
-	// mco_resume(S, id2);
+	mco_resume(S, id2);
 	mco_run(S, 0);
 }
 
