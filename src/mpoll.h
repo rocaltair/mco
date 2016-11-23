@@ -15,17 +15,14 @@ extern "C" {
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 # define MCO_BACKEND MCO_KQUEUE
 struct poll {
-	uint64_t timeout;
-	int kqueue;
-	int count;
+	int kqueuefd;
 }; 
 #endif
 
 #if defined(__linux__)
 # define MCO_BACKEND MCO_EPOLL
 struct poll {
-	uint64_t timeout;
-	int epoll;
+	int epollfd;
 };
 #endif
 
@@ -35,7 +32,6 @@ struct poll {
 # define MCO_BACKEND MCO_POLL
 # define MCO_FD_MAX_SZ 1024
 struct poll {
-	uint64_t timeout;
 	int nfds;
 	struct pollfd fds[MCO_FD_MAX_SZ];
 	int co_map[MCO_FD_MAX_SZ];

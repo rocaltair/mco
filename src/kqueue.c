@@ -9,8 +9,7 @@
 void mco_init_mpoll(mco_schedule *S)
 {
 	struct poll *m_poll = mco_get_poll(S);
-	m_poll->kqueue = kqueue();
-	m_poll->count = 0;
+	m_poll->kqueuefd = kqueue();
 }
 
 void mco_poll(mco_schedule *S)
@@ -19,7 +18,7 @@ void mco_poll(mco_schedule *S)
 	struct kevent kev[128];
 	struct timespec ts;
 	struct poll *m_poll = mco_get_poll(S);
-	int kq = m_poll->kqueue;
+	int kq = m_poll->kqueuefd;
 	struct htimer_mgr_s *timer_mgr = mco_get_timer_mgr(S);
 	int next = htimer_next_timeout(timer_mgr);
 	if (next < 0)
@@ -51,7 +50,7 @@ void mco_wait(mco_schedule *S, int fd, int flag)
 	int ev_flag = 0;
 	int id = mco_running(S);
 	struct poll *m_poll = mco_get_poll(S);
-	int kq = m_poll->kqueue;
+	int kq = m_poll->kqueuefd;
 
 	assert(id >= 0);
 	assert(fd >= 0);

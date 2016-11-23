@@ -15,8 +15,6 @@
 #include "mpoll.h"
 #include "net.h"
 
-typedef struct mco_schedule mco_schedule;
-
 int mco_announce(mco_schedule *S, int istcp, const char *server, int port)
 {
 	int fd, n, proto;
