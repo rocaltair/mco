@@ -4,11 +4,14 @@
 #include <unistd.h>
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "mco.h"
 #include "fd.h"
 #include "net.h"
 
 #define PORT 6688
+
+int port = PORT;
 
 struct remote_host {
 	char ip[32];
@@ -48,8 +51,8 @@ void start_service(mco_schedule *S)
 {
 	int id;
 	int listen_fd;
-	printf("start listen on *:%d...\n", PORT);
-	listen_fd = mco_announce(S, 1, "0.0.0.0", PORT);
+	printf("start listen on *:%d...\n", port);
+	listen_fd = mco_announce(S, 1, "0.0.0.0", port);
 	id = mco_new(S, 0, listen_service, (void *)(uintptr_t)listen_fd);
 	assert(id >= 0);
 	mco_resume(S, id);
@@ -59,6 +62,10 @@ void start_service(mco_schedule *S)
 int main(int argc, char **argv)
 {
 	mco_schedule *S = mco_open(0);
+	if (argc >= 2) {
+		port = atoi(argv[1]);
+		port = port > 0 ? port : PORT;
+	}
 	start_service(S);
 	mco_close(S);
 	return 0;
