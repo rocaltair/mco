@@ -12,14 +12,13 @@ extern "C" {
 #define MCO_EPOLL 1
 #define MCO_KQUEUE 2
 
-#if 0
 #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__)
 # define MCO_BACKEND MCO_KQUEUE
 struct poll {
 	uint64_t timeout;
 	int kqueue;
+	int count;
 }; 
-#endif
 #endif
 
 #if defined(__linux__)

@@ -10,6 +10,7 @@ void mco_init_mpoll(mco_schedule *S)
 {
 	int i;
 	struct poll *m_poll = mco_get_poll(S);
+	m_poll->nfds = 0;
 	memset(m_poll->fds, 0, sizeof(struct pollfd) * MCO_FD_MAX_SZ);
 	for (i = 0; i < MCO_FD_MAX_SZ; i++) {
 		m_poll->fds[i].fd = -1;

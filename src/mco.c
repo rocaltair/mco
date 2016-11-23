@@ -79,6 +79,7 @@ mco_schedule* mco_open(int st_sz)
 	S->running = -1;
 	S->later_cnt = 0;
 	htimer_mgr_init(&S->timer_mgr);
+	mco_init_mpoll(S);
 	S->co = malloc(sizeof(mcoco *) * S->cap);
 	memset(S->co, 0, sizeof(mcoco *) * S->cap);
 	return S;
