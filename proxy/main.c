@@ -30,6 +30,7 @@ static void rwhandle(mco_schedule *S, void *p)
 	while((n = mco_read(S, r, buf, sizeof(buf)/sizeof(buf[0]))) > 0)
 		mco_write(S, w, buf, n);
 	shutdown(r, SHUT_RD);
+	shutdown(w, SHUT_WR);
 	close(r);
 	printf("disconnect\n");
 }
