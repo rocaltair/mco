@@ -5,28 +5,32 @@ set(CMAKE_C_FLAGS "-Wall -O2")
 set(CMAKE_C_FLAGS_DEBUG "-g3 -Wall")
 set(CMAKE_C_FLAGS_RELEASE "-O2 -Wall")
 
-project(libmco)
+set(APPNAME datetime)
 
-set(LIBNAME mco)
+project(proj_datetime)
+
+
+link_directories(
+	../src
+)
+
 
 include_directories(
-	.
+	../src
 )
+
+set(EXECUTE_FILE ${APPNAME})
 
 set(SRC_LIST 
-	mco.c
-	htimer.c
-	mpoll.c
-	fd.c
-	net.c
+	main.c
+	
 )
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-	add_definitions(-D_XOPEN_SOURCE)
-endif()
+set(LIB_LIST mco)
 
-add_library(${LIBNAME} STATIC
-	${SRC_LIST}
+add_executable(${EXECUTE_FILE} ${SRC_LIST})
+target_link_libraries(${EXECUTE_FILE} 
+	${LIB_LIST}
 )
 
 message("== <CMAKE_SYSTEM_NAME> " ${CMAKE_SYSTEM_NAME})
@@ -34,3 +38,6 @@ foreach(item ${SRC_LIST})
 	MESSAGE("--<SOURCE> " ${item})
 endforeach(item)
 
+foreach(item ${LIB_LIST})
+	MESSAGE("--<LIBRARY> " ${item})
+endforeach(item)
