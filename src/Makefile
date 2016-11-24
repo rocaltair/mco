@@ -3,7 +3,7 @@ CFLAGS = -c -Wall -g
 SLIBNAME = mco
 SLIB = lib$(SLIBNAME).a
 
-LIB_OBJS = mco.o htimer.o mpoll.o fd.o net.o
+LIB_OBJS = mco.o htimer.o fd.o net.o
 
 PLATFORM = $(shell uname)
 
@@ -16,14 +16,11 @@ ALL : $(SLIB)
 $(SLIB) : $(LIB_OBJS)
 	ar -cr $@ $^
 
-mco.o : mco.c mco.h
+mco.o : mco.c mco.h epoll.c kqueue.c poll.c
 	$(CC) -o $@ $(CFLAGS) mco.c
 
 htimer.o : htimer.c htimer.h
 	$(CC) -o $@ $(CFLAGS) htimer.c
-
-mpoll.o : mpoll.c poll.c kqueue.c epoll.c mco.h
-	$(CC) -o $@ $(CFLAGS) mpoll.c
 
 fd.o : fd.c mco.h
 	$(CC) -o $@ $(CFLAGS) fd.c

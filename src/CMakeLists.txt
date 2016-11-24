@@ -16,7 +16,6 @@ include_directories(
 set(SRC_LIST 
 	mco.c
 	htimer.c
-	mpoll.c
 	fd.c
 	net.c
 )

@@ -10,6 +10,10 @@
 #include "mco.h"
 #include "htimer.h"
 
+#include "kqueue.c"
+#include "epoll.c"
+#include "poll.c"
+
 #ifndef MCO_DEFAULT_ST_SZ
 # define MCO_DEFAULT_ST_SZ (32 * 1024)
 #endif 
