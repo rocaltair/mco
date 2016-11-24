@@ -1,6 +1,6 @@
 # mco
 
-C-coroutine base on ucontext
+C-coroutine event framework based on ucontext
 
 tested on Mac OSX(10.12) & CentOS 6.5 & RaspberryPi 2B+(armv6 32bit)
 
