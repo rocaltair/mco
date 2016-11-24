@@ -61,6 +61,7 @@ void mco_poll(mco_schedule *S)
 	assert(mco_running(S) < 0);
 
 	n = epoll_wait(epollfd, events, m_poll->ncap, next);
+	htimer_perform(timer_mgr);
 	if (n <= 0) {
 		return;
 	}
