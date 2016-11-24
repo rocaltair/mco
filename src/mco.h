@@ -88,7 +88,7 @@ void mco_wait(mco_schedule *S, int fd, int flag);
 /* fd control */
 int mco_nblock(int fd);
 int mco_read(mco_schedule *S, int fd, void *buf, size_t n);
-int mco_write(mco_schedule *S, int fd, void *buf, size_t n);
+int mco_write(mco_schedule *S, int fd, const void *buf, size_t n);
 
 /* network */
 int mco_lookup(const char *name, uint32_t *ip);

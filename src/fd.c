@@ -17,7 +17,7 @@ int mco_read(mco_schedule *S, int fd, void *buf, size_t n)
 	return m;
 }
 
-int mco_write(mco_schedule *S, int fd, void *buf, size_t n)
+int mco_write(mco_schedule *S, int fd, const void *buf, size_t n)
 {
 	int m, tot;
 	for(tot=0; tot<n; tot+=m){
