@@ -5,6 +5,10 @@
 #include "htimer.h"
 #include "mco.h"
 
+struct htimer_mgr_s;
+struct htimer_mgr_s * mco_get_timer_mgr(mco_schedule *S);
+struct poll * mco_get_poll(mco_schedule *S);
+
 void mco_init_mpoll(mco_schedule *S)
 {
 	int i;
@@ -15,6 +19,10 @@ void mco_init_mpoll(mco_schedule *S)
 		m_poll->fds[i].fd = -1;
 		m_poll->co_map[i] = -1;
 	}
+}
+
+void mco_release_mpoll(mco_schedule *S)
+{
 }
 
 void mco_poll(mco_schedule *S)

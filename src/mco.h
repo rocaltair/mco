@@ -22,11 +22,17 @@ extern "C" {
 # define MCO_BACKEND MCO_KQUEUE
 struct poll {
 	int kqueuefd;
+	int ncap;
+	int nev;
+	void *kev;
 }; 
 #elif defined(__linux__)
 # define MCO_BACKEND MCO_EPOLL
 struct poll {
 	int epollfd;
+	int ncap;
+	int nevents;
+	void *events;
 };
 #elif !defined(MCO_BACKEND)
 # include <poll.h>
@@ -52,9 +58,7 @@ typedef enum {
 	MCO_RUN_ONCE = 1,
 } mco_flag_t;
 
-struct poll;
 struct mco_schedule;
-struct htimer_mgr_s;
 typedef struct mco_schedule mco_schedule;
 
 typedef void (*mco_func)(mco_schedule *S, void *ud);
@@ -74,12 +78,8 @@ int mco_status(mco_schedule *S, int id);
 int mco_create(mco_schedule *S, int st_sz, mco_func func, void *ud);
 
 int mco_active_sz(mco_schedule *S);
-struct htimer_mgr_s * mco_get_timer_mgr(mco_schedule *S);
 
 /* poll */
-struct poll * mco_get_poll(mco_schedule *S);
-void mco_init_mpoll(mco_schedule *S);
-void mco_poll(mco_schedule *S);
 void mco_wait(mco_schedule *S, int fd, int flag);
 
 /* fd control */

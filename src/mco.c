@@ -80,6 +80,10 @@ static void delete_mcoco(mcoco *C);
 static void mco_main(uint32_t low, uint32_t high);
 static void mco_on_resume_later(mco_schedule *S);
 
+void mco_init_mpoll(mco_schedule *S);
+void mco_release_mpoll(mco_schedule *S);
+void mco_poll(mco_schedule *S);
+
 mco_schedule* mco_open(int st_sz)
 {
 	mco_schedule * S = malloc(sizeof(*S));
@@ -135,6 +139,7 @@ void mco_close(mco_schedule *S)
 	}
 	free(S->co);
 	S->co = NULL;
+	mco_release_mpoll(S);
 	free(S);
 }
 
