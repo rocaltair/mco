@@ -40,6 +40,7 @@ void mco_init_mpoll(mco_schedule *S)
 
 void mco_release_mpoll(mco_schedule *S)
 {
+	struct poll *m_poll = mco_get_poll(S);
 	free(m_poll->events);
 	m_poll->events = NULL;
 	m_poll->nevents = 0;

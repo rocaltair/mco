@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+#include <stddef.h>
+
 #define mco_assert(condition)                          \
 	do {                                           \
 	        if (condition)                         \
