@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include "htimer.h"
 #include "mco.h"
-#include "mpoll.h"
 
 void mco_init_mpoll(mco_schedule *S)
 {

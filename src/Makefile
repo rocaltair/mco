@@ -22,13 +22,13 @@ mco.o : mco.c mco.h
 htimer.o : htimer.c htimer.h
 	$(CC) -o $@ $(CFLAGS) htimer.c
 
-mpoll.o : mpoll.h mpoll.c poll.c kqueue.c epoll.c
+mpoll.o : mpoll.c poll.c kqueue.c epoll.c mco.h
 	$(CC) -o $@ $(CFLAGS) mpoll.c
 
-fd.o : mco.h fd.c
+fd.o : fd.c mco.h
 	$(CC) -o $@ $(CFLAGS) fd.c
 
-net.o : net.c net.h
+net.o : net.c mco.h
 	$(CC) -o $@ $(CFLAGS) net.c
 
 clean:

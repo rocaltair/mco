@@ -10,10 +10,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdint.h>
-
-#include "fd.h"
-#include "mpoll.h"
-#include "net.h"
+#include "mco.h"
 
 int mco_announce(mco_schedule *S, int istcp, const char *server, int port)
 {

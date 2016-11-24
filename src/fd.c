@@ -1,8 +1,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
-#include "fd.h"
-#include "mpoll.h"
+#include <stdint.h>
+#include "mco.h"
 
 int mco_nblock(int fd)
 {

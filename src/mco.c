@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include "mco.h"
 #include "htimer.h"
-#include "mpoll.h"
 
 #ifndef MCO_DEFAULT_ST_SZ
 # define MCO_DEFAULT_ST_SZ (32 * 1024)

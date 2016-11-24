@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include "mco.h"
-#include "fd.h"
-#include "net.h"
 
 int listen_port = 1234;
 int target_port = 80;

@@ -6,8 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "mco.h"
-#include "fd.h"
-#include "net.h"
 
 #define PORT 6688
 
