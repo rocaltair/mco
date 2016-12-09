@@ -47,7 +47,7 @@ void mco_release_mpoll(mco_schedule *S)
 	m_poll->ncap = 0;
 }
 
-void mco_poll(mco_schedule *S)
+int mco_poll(mco_schedule *S)
 {
 	int i, n;
 	struct poll *m_poll = mco_get_poll(S);
@@ -63,7 +63,7 @@ void mco_poll(mco_schedule *S)
 	n = epoll_wait(epollfd, events, m_poll->ncap, next);
 	htimer_perform(timer_mgr);
 	if (n <= 0) {
-		return;
+		return 0;
 	}
 	for (i = 0; i < n; i++) {
 		int fd;
@@ -77,6 +77,7 @@ void mco_poll(mco_schedule *S)
 		m_poll->nevents--;
 		mco_resume(S, id);
 	}
+	return 0;
 }
 
 void mco_wait(mco_schedule *S, int fd, int flag)

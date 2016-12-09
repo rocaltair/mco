@@ -25,7 +25,7 @@ void mco_release_mpoll(mco_schedule *S)
 {
 }
 
-void mco_poll(mco_schedule *S)
+int mco_poll(mco_schedule *S)
 {
 	int i;
 	int n;
@@ -41,7 +41,7 @@ void mco_poll(mco_schedule *S)
 	n = poll(fds, nfds, next);
 	htimer_perform(timer_mgr);
 	if (n <= 0) {
-		return;
+		return 0;
 	}
 	for (i = 0; i < nfds; i++) {
 		struct pollfd *p = &m_poll->fds[i];
@@ -55,6 +55,7 @@ void mco_poll(mco_schedule *S)
 			mco_resume(S, id);
 		}
 	}
+	return 0;
 }
 
 void mco_wait(mco_schedule *S, int fd, int flag)

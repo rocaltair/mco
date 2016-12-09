@@ -68,7 +68,7 @@ typedef void (*mco_func)(mco_schedule *S, void *ud);
 
 mco_schedule* mco_open(int st_sz);
 void mco_close(mco_schedule *S);
-void mco_run(mco_schedule *S, int flag);
+int mco_run(mco_schedule *S, int flag);
 void mco_sleep(mco_schedule *S, int ms);
 
 int mco_running(mco_schedule *S);

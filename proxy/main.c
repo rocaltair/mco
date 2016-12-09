@@ -11,7 +11,7 @@ const char * target_host = "115.239.210.27";
 
 static void *mkcopy(mco_schedule *S, int r, int w)
 {
-	int *p = malloc(sizeof(*p));
+	int *p = malloc(sizeof(int) * 2);
 	p[0] = r;
 	p[1] = w;
 	return p;

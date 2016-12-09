@@ -86,7 +86,7 @@ static void mco_on_resume_later(mco_schedule *S);
 
 void mco_init_mpoll(mco_schedule *S);
 void mco_release_mpoll(mco_schedule *S);
-void mco_poll(mco_schedule *S);
+int mco_poll(mco_schedule *S);
 
 mco_schedule* mco_open(int st_sz)
 {
@@ -121,14 +121,15 @@ void mco_sleep(mco_schedule *S, int ms)
 	mco_yield(S);
 }
 
-void mco_run(mco_schedule *S, int flag)
+int mco_run(mco_schedule *S, int flag)
 {
 	do {
 		mco_on_resume_later(S);
 		if (mco_active_sz(S) <= 0)
-			return;
+			return 0;
 		mco_poll(S);
 	} while(flag == MCO_RUN_DEFAULT);
+	return 0;
 }
 
 void mco_close(mco_schedule *S)

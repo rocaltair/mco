@@ -31,7 +31,7 @@ void mco_release_mpoll(mco_schedule *S)
 	m_poll->nev = 0;
 }
 
-void mco_poll(mco_schedule *S)
+int mco_poll(mco_schedule *S)
 {
 	int i, n;
 	struct timespec ts;
@@ -49,7 +49,7 @@ void mco_poll(mco_schedule *S)
 	n = kevent(kq, NULL, 0, kev, m_poll->ncap, &ts);
 	htimer_perform(timer_mgr);
 	if (n <= 0) {
-		return;
+		return 0;
 	}
 	for (i = 0; i < n; i++) {
 		struct kevent *p = kev + i;
@@ -62,6 +62,7 @@ void mco_poll(mco_schedule *S)
 		m_poll->nev--;
 		mco_resume(S, id);
 	}
+	return 0;
 }
 
 void mco_wait(mco_schedule *S, int fd, int flag)
