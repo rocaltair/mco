@@ -10,14 +10,17 @@
 #include "mco.h"
 #include "htimer.h"
 
-#include "kqueue.c"
-#include "epoll.c"
-#include "poll.c"
+#include "kqueue.h"
+#include "epoll.h"
+#include "poll.h"
 
 #ifndef MCO_DEFAULT_ST_SZ
 # define MCO_DEFAULT_ST_SZ (32 * 1024)
 #endif 
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+#ifndef MAX
+# define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 #include <stdint.h>
 

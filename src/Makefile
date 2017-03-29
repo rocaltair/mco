@@ -16,7 +16,7 @@ ALL : $(SLIB)
 $(SLIB) : $(LIB_OBJS)
 	ar -cr $@ $^
 
-mco.o : mco.c mco.h epoll.c kqueue.c poll.c
+mco.o : mco.c | mco.h epoll.h kqueue.h poll.h
 	$(CC) -o $@ $(CFLAGS) mco.c
 
 htimer.o : htimer.c htimer.h

@@ -12,7 +12,7 @@ struct htimer_mgr_s;
 struct htimer_mgr_s * mco_get_timer_mgr(mco_schedule *S);
 struct poll * mco_get_poll(mco_schedule *S);
 
-void mco_init_mpoll(mco_schedule *S)
+static void mco_init_mpoll(mco_schedule *S)
 {
 	struct poll *m_poll = mco_get_poll(S);
 	size_t sz;
@@ -23,7 +23,7 @@ void mco_init_mpoll(mco_schedule *S)
 	memset(m_poll->kev, 0, sz);
 }
 
-void mco_release_mpoll(mco_schedule *S)
+static void mco_release_mpoll(mco_schedule *S)
 {
 	struct poll *m_poll = mco_get_poll(S);
 	free(m_poll->kev);
@@ -31,7 +31,7 @@ void mco_release_mpoll(mco_schedule *S)
 	m_poll->nev = 0;
 }
 
-int mco_poll(mco_schedule *S)
+static int mco_poll(mco_schedule *S)
 {
 	int i, n;
 	struct timespec ts;

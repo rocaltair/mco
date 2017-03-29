@@ -24,7 +24,7 @@ static void fromuint64(uint64_t v, int *fd, int *id)
 	*id = (int)(v & 0xffffffff);
 }
 
-void mco_init_mpoll(mco_schedule *S)
+static void mco_init_mpoll(mco_schedule *S)
 {
 	size_t sz;
 	struct poll *m_poll = mco_get_poll(S);
@@ -38,7 +38,7 @@ void mco_init_mpoll(mco_schedule *S)
 	memset(m_poll->events, 0, sz);
 }
 
-void mco_release_mpoll(mco_schedule *S)
+static void mco_release_mpoll(mco_schedule *S)
 {
 	struct poll *m_poll = mco_get_poll(S);
 	free(m_poll->events);
@@ -47,7 +47,7 @@ void mco_release_mpoll(mco_schedule *S)
 	m_poll->ncap = 0;
 }
 
-int mco_poll(mco_schedule *S)
+static int mco_poll(mco_schedule *S)
 {
 	int i, n;
 	struct poll *m_poll = mco_get_poll(S);
