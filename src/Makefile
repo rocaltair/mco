@@ -13,8 +13,10 @@ endif
 
 ALL : $(SLIB)
 
-$(SLIB) : $(LIB_OBJS)
-	ar -cr $@ $^
+$(SLIB) : mco.c htimer.c fd.c net.c
+	$(MAKE) $(LIB_OBJS)
+	ar -cr $@ $(LIB_OBJS)
+	rm -f $(LIB_OBJS)
 
 mco.o : mco.c | mco.h epoll.h kqueue.h poll.h
 	$(CC) -o $@ $(CFLAGS) mco.c
